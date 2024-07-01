@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TechPrimeLab.Data;
 using TechPrimeLab.Models;
 
-namespace YourNamespace.Controllers
+namespace TechPrimeLab.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

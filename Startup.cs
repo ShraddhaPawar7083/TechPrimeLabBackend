@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using TechPrimeLab.Data;
 using TechPrimeLab.Models;
+using TechPrimeLab.Data; // Replace with your namespace
 
 public class Startup
 {
@@ -22,73 +19,35 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // Register ProjectManagementContext
-        services.AddDbContext<ProjectManagementContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-        services.AddScoped<ProjectManagementContext>();
-
-        // Register ApplicationDbContext for Identity
+        // Configure ApplicationDbContext and specify SQL Server connection string
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-        // Add Identity services
+        // Add ASP.NET Core Identity
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        services.ConfigureApplicationCookie(options =>
-        {
-            options.LoginPath = "/api/login";
-            options.AccessDeniedPath = "/api/accessdenied";
-        });
-
+        // Add controllers and enable API behavior
         services.AddControllers();
-
-        // Configure JWT authentication
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
-                };
-            });
-
-        services.AddSwaggerGen();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        // Configure pipeline
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
-        }
 
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-
+        // Enable routing and endpoints
         app.UseRouting();
 
+        // Enable authentication and authorization
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Management API V1");
-        });
-
+        // Use endpoints for MVC
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
