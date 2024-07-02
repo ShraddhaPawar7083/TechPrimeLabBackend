@@ -1,11 +1,11 @@
-﻿namespace TechPrimeLab.Controllers
-{
-    using Microsoft.AspNetCore.Mvc;
-    using System.Data.Entity;
-    using System.Threading.Tasks;
-    using TechPrimeLab.Data;
-    using TechPrimeLab.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // Use EF Core namespace for async methods
+using System.Threading.Tasks;
+using TechPrimeLab.Data;
+using TechPrimeLab.Models;
 
+namespace TechPrimeLab.Controllers
+{
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -23,7 +23,7 @@
             if (ModelState.IsValid)
             {
                 // Query the database to find the user
-                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == model.Username && u.Password == model.Password);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
 
                 if (user != null)
                 {
