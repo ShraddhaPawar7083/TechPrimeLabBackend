@@ -1,34 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TechPrimeLab.Data;
-using TechPrimeLab.Models;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-
-namespace TechPrimeLab.Controllers
+﻿namespace TechPrimeLab.Controllers
 {
-    [ApiController]
+    using Microsoft.AspNetCore.Mvc;
+    using System.Data.Entity;
+    using System.Threading.Tasks;
+    using TechPrimeLab.Data;
+    using TechPrimeLab.Models;
+
     [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly ProjectManagementContext _context;
+        private readonly ProjectManagementContext _dbContext;
 
-        public LoginController(ProjectManagementContext context)
+        public LoginController(ProjectManagementContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login([FromBody] User loginRequest)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginRequest.Email && u.Password == loginRequest.Password);
-
-            if (user == null)
+            if (ModelState.IsValid)
             {
-                return Unauthorized(new { Success = "False", Message = "Invalid User" });
+                // Query the database to find the user
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == model.Username && u.Password == model.Password);
+
+                if (user != null)
+                {
+                    // Successful login
+                    // You can implement further authentication logic here if needed
+                    return Ok("Login Successful");
+                }
+                else
+                {
+                    // Failed login attempt
+                    ModelState.AddModelError(string.Empty, "Invalid username or password");
+                    return BadRequest(ModelState);
+                }
             }
 
-            return Ok(new { Success = "True", Message = "Valid User" });
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            // Implement logout logic if needed
+            return Ok("Logout Successful");
         }
     }
 }
