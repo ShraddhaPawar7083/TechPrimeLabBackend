@@ -33,8 +33,12 @@ public class Startup
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
+
+
         // Add controllers and enable API behavior
         services.AddControllers();
+        services.AddSwaggerGen();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
