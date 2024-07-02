@@ -27,6 +27,7 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         services.AddDbContext<ProjectManagementContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
 
         // Add ASP.NET Core Identity
         services.AddIdentity<ApplicationUser, IdentityRole>()

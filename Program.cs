@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ProjectContext>(options =>
 
 builder.Services.AddDbContext<ProjectManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
